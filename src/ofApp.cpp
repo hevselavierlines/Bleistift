@@ -54,8 +54,11 @@ void ofApp::reset() {
     
     float theta = 2 * M_PI / sides;
     
+    pencil.clear();
+    centrePoint.z = length / 2;
+    pencil.addVertex(centrePoint);
     for(int i = 0; i < sides; i++) {
-        float angle = theta * (i + 0.5f) + ofDegToRad(-elevation);
+        float angle = theta * (i - 0.5f);
         
         ofVec3f position;
         position.x = centrePoint.x + (radius * cos(angle));
@@ -75,10 +78,20 @@ void ofApp::reset() {
             particle->setBodyColor(ofColor::blue);
             particle->setWireColor(ofColor::blue);
         }
+        
+        pencil.addVertex(position);
+        
+        if(i > 0) {
+            pencil.addTriangle(i, 0, i + 1);
+        }
         particle->setPosition(position);
         points.push_back(particle);
     }
+    pencil.addTriangle(sides, 0, 1);
     
+    int vertexOffset = sides + 1;
+    centrePoint.z = -length / 2;
+    pencil.addVertex(centrePoint);
     for(int i = 0; i < sides; i++) {
         float angle = theta * (i - 0.5f);
         
@@ -97,9 +110,20 @@ void ofApp::reset() {
             particle->setBodyColor(ofColor::blue);
             particle->setWireColor(ofColor::blue);
         }
+        
+        pencil.addVertex(position);
+        
+        if(i > 0) {
+            pencil.addTriangle(vertexOffset + i, vertexOffset + 0, vertexOffset + i + 1);
+            pencil.addTriangle(vertexOffset + i, vertexOffset + i + 1, i);
+            pencil.addTriangle(i, i + 1, vertexOffset + i);
+        }
         particle->setPosition(position);
         points.push_back(particle);
+        
+        
     }
+    pencil.addTriangle(vertexOffset + sides, vertexOffset, vertexOffset + 1);
 }
 
 void ofApp::update() {
@@ -134,6 +158,7 @@ void ofApp::draw() {
     for(Particle::Ref p : points) {
         p->draw();
     }
+    pencil.draw();
     ofPushMatrix();
     ofSetColor(0, 255, 0, 128);
     ofRotate(-elevation, 0, 0, 1.0f);

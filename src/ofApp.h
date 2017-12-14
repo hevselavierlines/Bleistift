@@ -39,6 +39,8 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
+        ofMesh pencil;
+    
         // simple 3D world with ground and axes
         const float RANGE = 16;
         ofEasyCam easyCam;
